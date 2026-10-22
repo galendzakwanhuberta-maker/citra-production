@@ -15,7 +15,7 @@ Website katalog dan panel admin untuk **Citra Production** (percetakan & cindera
 - Moderasi FAQ dan testimoni (approve/reject), kelola kontak
 
 ## Teknologi
-Vue 3 (Composition API, `<script setup>`), Vite, vue-router 4 (hash mode), store reaktif + IndexedDB. Tanpa backend.
+Vue 3 (Composition API, `<script setup>`), Vite, vue-router 4 (hash mode), store reaktif + IndexedDB.
 
 ## Menjalankan
 
