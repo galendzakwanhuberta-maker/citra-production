@@ -1,6 +1,6 @@
 # Citra Productions
 
-Website katalog dan panel admin untuk **Citra Production** (percetakan & cinderamata, Yogyakarta). Dibuat dengan **Vue 3 + Vite**, desain dari Figma "PAD", responsif untuk mobile dan desktop.
+Website katalog dan panel admin untuk **Citra Production** (percetakan & cinderamata, Yogyakarta). Dibuat dengan **Vue 3 + Vite**, responsif untuk mobile dan desktop.
 
 ## Fitur
 
