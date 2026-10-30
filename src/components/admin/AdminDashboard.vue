@@ -3,9 +3,9 @@ import { computed } from 'vue'
 import { state, pendingFaqs, pendingTestimonials, visibleProducts } from '../../stores/store'
 const tiles = computed(() => [
   { l: 'Total Produk', v: state.products.length, h: `${visibleProducts.value.length} Aktif` },
-  { l: 'Menunggu persetujuan', v: pendingFaqs.value.length + pendingTestimonials.value.length, h: 'pertanyaan & testimoni', warn: true },
-  { l: 'Portofolio', v: state.portfolio.length, h: 'Koleksi foto' },
   { l: 'Kategori', v: state.categories.length, h: `${state.packagings.length} jenis packaging` },
+  { l: 'Portofolio', v: state.portfolio.length, h: 'Koleksi foto' },
+  { l: 'Menunggu persetujuan', v: pendingFaqs.value.length + pendingTestimonials.value.length, h: 'pertanyaan & testimoni', warn: true },
 ])
 </script>
 <template>

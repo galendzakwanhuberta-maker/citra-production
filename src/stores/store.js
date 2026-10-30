@@ -3,12 +3,12 @@ import { kvGet, kvSet } from './db'
 import { uid } from '../utils/id'
 import { siteConfig } from '../config/site'
 
-const KEY = 'data-v2'
+const KEY = 'data-v3'
 const DATA_KEYS = ['products', 'categories', 'packagings', 'portfolio', 'faqs', 'testimonials', 'profile']
 
 function seed() {
   const mk = (name) => ({ id: uid(), name })
-  const categories = ['Samir dan Medali', 'Plakat', 'Souvenir', 'Pin'].map(mk)
+  const categories = ['Samir dan Medali', 'Plakat', 'Souvenir', 'Selempang', 'Pin'].map(mk)
   const packagings = ['Paper bag', 'Box mika', 'Box beludru', 'Box beludru mini', 'Box kayu', 'Box kertas', 'Plastik OPP'].map(mk)
   const cid = (n) => categories.find((c) => c.name === n).id
   const pid = (n) => packagings.find((c) => c.name === n).id
@@ -17,39 +17,55 @@ function seed() {
   const rows = [
     ['Medali Wisuda Logam', S, 'Box beludru mini', 15000, 25000], ['Medali Juara Emas', S, 'Box beludru mini', 18000, 30000],
     ['Medali Akrilik Custom', S, 'Plastik OPP', 12000, 20000], ['Samir Wisuda Satin', S, 'Plastik OPP', 20000, 0],
-    ['Samir Wisuda Beludru', S, 'Plastik OPP', 35000, 50000], ['Samir Juara Lomba', S, 'Plastik OPP', 30000, 0],
+    ['Samir Wisuda Beludru', S, 'Plastik OPP', 35000, 50000], ['Selempang Juara Lomba', 'Selempang', 'Plastik OPP', 30000, 0],
     ['Plakat Akrilik', 'Plakat', 'Box kertas', 85000, 150000], ['Plakat Kayu', 'Plakat', 'Box kayu', 120000, 200000],
     ['Plakat Kayu Ukir', 'Plakat', 'Box kayu', 150000, 250000], ['Plakat Kaca Etching', 'Plakat', 'Box beludru', 175000, 300000],
     ['Plakat Penghargaan Logam', 'Plakat', 'Box beludru', 160000, 280000], ['Plakat Mini Seminar', 'Plakat', 'Box kertas', 60000, 90000],
     ['Souvenir Mug Custom', 'Souvenir', 'Paper bag', 25000, 35000], ['Souvenir Tumbler Custom', 'Souvenir', 'Paper bag', 45000, 70000],
     ['Souvenir Gantungan Kunci', 'Souvenir', 'Plastik OPP', 5000, 12000], ['Souvenir Tote Bag KKN', 'Souvenir', 'Plastik OPP', 20000, 35000],
-    ['Souvenir Pulpen Logo', 'Souvenir', 'Plastik OPP', 4000, 8000], ['Souvenir Kotak Hadiah Wisuda', 'Souvenir', 'Box mika', 40000, 65000],
-    ['Souvenir Buku Agenda Seminar', 'Souvenir', 'Paper bag', 18000, 30000], ['Pin Peniti Wisuda Mini', 'Souvenir', 'Plastik OPP', 3000, 6000],
+    ['Selempang Wisuda Satin', 'Selempang', 'Plastik OPP', 22000, 0], ['Souvenir Pulpen Logo', 'Souvenir', 'Plastik OPP', 4000, 8000], ['Souvenir Kotak Hadiah Wisuda', 'Souvenir', 'Box mika', 40000, 65000],
+    ['Pin Peniti Wisuda Mini', 'Souvenir', 'Plastik OPP', 3000, 6000],
   ].map(([name, cat, pack, a, b], i) => ({
     id: uid(), name, categoryId: cid(cat), packagingId: pid(pack),
-    priceMin: a, priceMax: b, minOrder: '', altText: name, photos: [], hidden: false, createdAt: Date.now() - i * 1000,
+    priceMin: a, priceMax: b, minOrder: '', altText: name, description: `${name} custom dengan ukuran, nama, dan logo sesuai permintaan. Cocok untuk wisuda, KKN, seminar, maupun acara instansi. Hubungi kami untuk detail dan penawaran.`, photos: [], hidden: false, createdAt: Date.now() - i * 1000,
   }))
-  const faq = (q, a, status) => ({ id: uid(), q, a, status, createdAt: Date.now() })
+  const faq = (q, a, status, extra = {}) => ({ id: uid(), name: 'Anonim', q, a, status, hidden: false, createdAt: Date.now(), ...extra })
   const d = siteConfig.defaults
   return {
     products: rows, categories, packagings,
-    portfolio: ['Wisuda SMA Negeri 3 Bandung', 'Projek: Pemda DIY 2024', 'Seminar Nasional 2024', 'KKN UGM Periode 2024', 'Wisuda Universitas Swasta Yogyakarta', 'Lomba Pramuka Tingkat Kota', 'Seminar Kesehatan Masyarakat', 'Penghargaan Karyawan Teladan'].map((title) => ({ id: uid(), title, src: '', hidden: false })),
+    portfolio: [
+      ['Wisuda SMA Negeri 3 Bandung', 'Dokumentasi acara wisuda dan pengadaan samir serta medali.'], ['Wisuda Universitas Pasundan', 'Samir dan plakat untuk wisuda sarjana.'],
+      ['Projek: Pemda DIY 2024', 'Plakat penghargaan untuk acara pemerintah daerah.'], ['Seminar Nasional 2024', 'Souvenir dan sertifikat untuk peserta seminar.'],
+      ['KKN UGM Periode 2024', 'Tote bag dan pin untuk kegiatan KKN.'], ['Lomba Pramuka Tingkat Kota', 'Medali dan selempang juara lomba.'],
+      ['Seminar Kesehatan Masyarakat', 'Plakat mini dan buku agenda.'], ['Penghargaan Karyawan Teladan', 'Plakat kaca etching untuk karyawan teladan.'],
+    ].map(([title, description]) => ({ id: uid(), title, description, images: [], hidden: false })),
     faqs: [
+      faq('Berapa lama proses pembuatan plakat custom?', 'Untuk plakat akrilik dan kayu memakan waktu 3–5 hari kerja setelah approval desain dan DP diterima.', 'approved'),
+      faq('Apakah ada minimal pemesanan untuk samir dan medali wisuda?', 'Minimal pemesanan berbeda tiap produk. Kami tetap melayani satuan dengan penyesuaian biaya cetak.', 'approved'),
       faq('Apakah melayani pengiriman ke luar kota Yogya?', 'Untuk saat ini, pengiriman belum dapat dilakukan ke luar kota Yogyakarta.', 'approved'),
-      faq('Berapa lama waktu pengerjaan pesanan?', 'Rata-rata 3–7 hari kerja, tergantung jenis dan jumlah produk.', 'approved'),
-      faq('Apakah bisa memakai desain sendiri?', 'Bisa. Kirim desain kamu lewat WhatsApp untuk kami cek bersama.', 'approved'),
-      faq('Apakah ada minimal pemesanan?', 'Minimal pesanan berbeda tiap produk. Tanyakan lewat WhatsApp.', 'approved'),
+      faq('Apakah bisa memakai desain sendiri?', 'Bisa. Kirim file desain atau logo lewat WhatsApp untuk kami cek bersama.', 'approved'),
       faq('Bagaimana cara pembayarannya?', 'Pembayaran via transfer atau tunai; DP diminta saat pesanan dikonfirmasi.', 'approved'),
       faq('Apakah bisa melihat contoh produk langsung?', 'Bisa, silakan datang ke toko kami di Ambarrukmo, Yogyakarta.', 'approved'),
-      faq('Apakah bisa cetak kop surat dan stempel?', 'Bisa. Kami juga menerima kalender, buku agenda undangan, dan stempel klise.', 'approved'),
-      faq('Apakah ada diskon untuk pemesanan banyak?', '', 'pending'),
-      faq('Apakah bisa kirim ke Surabaya?', '', 'pending'),
-      faq('Bisakah memesan kurang dari 10 buah?', '', 'pending'),
+      faq('Apakah bisa cetak kop surat dan stempel?', 'Bisa. Kami juga menerima kalender, buku agenda undangan, dan stempel klise.', 'approved', { hidden: true }),
+      faq('Apakah bisa pesan plakat dengan desain sendiri?', '', 'pending'),
+      faq('Apakah ada garansi jika produk rusak saat pengiriman?', '', 'pending'),
+      faq('Bisa minta contoh produk sebelum pesan dalam jumlah banyak?', '', 'pending'),
+      faq('Jual followers murah, hubungi kami sekarang untuk harga spesial dan bonus.', '', 'rejected'),
+      faq('tes tes pertanyaan 123 asdfgh qwerty bagus bagus bagus', '', 'rejected'),
     ],
     testimonials: [
-      { id: uid(), name: 'ahmad ahsin', text: 'Produknya bagus banget, aku mau pesan lagi besok.', likes: 24, status: 'approved', createdAt: Date.now() },
-      { id: uid(), name: 'Rina', text: 'Pengerjaan cepat dan hasilnya rapi. Recommended!', likes: 9, status: 'approved', createdAt: Date.now() },
-    ],
+      ['Rina Puspita', 'Plakat akrilik untuk acara wisuda kami hasilnya rapi dan sesuai desain. Pengerjaannya juga cepat.', 24, 'approved'],
+      ['Budi Santoso', 'Pesan samir dan medali 50 pcs, semuanya datang tepat waktu dan packing aman. Pasti pesan lagi.', 18, 'approved'],
+      ['Dewi Lestari', 'Plakat marmernya terlihat mewah. Admin ramah dan responsif saat revisi desain.', 12, 'approved'],
+      ['Fajar Nugroho', 'Souvenir gantungan kunci custom untuk event kampus hasil cetaknya tajam dan warnanya pas.', 9, 'approved'],
+      ['Siti Rahma', 'Harga bersahabat dan kualitas bagus. Sayang pengirimannya sedikit terlambat dari estimasi.', 3, 'approved', true],
+      ['Andi Pratama', 'Selempang wisuda sesuai pesanan, bahan halus dan bordirnya rapi sekali.', 7, 'approved', true],
+      ['Maya Kusuma', 'Produknya bagus banget, aku mau beli lagi besok. Terima kasih Citra Production!', 0, 'pending'],
+      ['Hendra Wijaya', 'Medali custom untuk turnamen futsal kantor hasilnya melebihi ekspektasi kami.', 0, 'pending'],
+      ['Lia Anggraini', 'Pelayanan cepat dan ramah, desain plakat dibantu sampai benar-benar sesuai.', 0, 'pending'],
+      ['Rudi Hartono', 'Jual followers murah, hubungi kami sekarang untuk harga spesial dan bonus.', 0, 'rejected'],
+      ['Anonim', 'tes tes testimoni 123 asdfgh qwerty bagus bagus bagus', 0, 'rejected'],
+    ].map(([name, text, likes, status, hidden]) => ({ id: uid(), name, text, likes, status, hidden: !!hidden, productId: '', createdAt: Date.now() })),
     profile: {
       title: 'Citra Production',
       description: 'Menyediakan berbagai jenis cinderamata untuk wisuda, KKN, dan Seminar. Juga menerima cetak kop Surat, Kalender, Buku Agenda Undangan, Stempel Klise, dan Warna (sistem komputer)',
@@ -78,10 +94,14 @@ export async function resetAll() { Object.assign(state, seed()); await persist()
 // ---------- getter ----------
 export const visibleProducts = computed(() => state.products.filter((p) => !p.hidden))
 export const visiblePortfolio = computed(() => state.portfolio.filter((p) => !p.hidden))
-export const approvedFaqs = computed(() => state.faqs.filter((f) => f.status === 'approved'))
+export const approvedFaqs = computed(() => state.faqs.filter((f) => f.status === 'approved' && !f.hidden)) // tampil di publik
+export const liveFaqs = computed(() => state.faqs.filter((f) => f.status === 'approved')) // termasuk yang disembunyikan (admin)
 export const pendingFaqs = computed(() => state.faqs.filter((f) => f.status === 'pending'))
-export const approvedTestimonials = computed(() => state.testimonials.filter((t) => t.status === 'approved'))
+export const rejectedFaqs = computed(() => state.faqs.filter((f) => f.status === 'rejected'))
+export const approvedTestimonials = computed(() => state.testimonials.filter((t) => t.status === 'approved' && !t.hidden))
+export const liveTestimonials = computed(() => state.testimonials.filter((t) => t.status === 'approved'))
 export const pendingTestimonials = computed(() => state.testimonials.filter((t) => t.status === 'pending'))
+export const rejectedTestimonials = computed(() => state.testimonials.filter((t) => t.status === 'rejected'))
 export const nameOf = (list, id) => state[list].find((x) => x.id === id)?.name || ''
 export const countProducts = (field, id, onlyVisible = false) =>
   (onlyVisible ? visibleProducts.value : state.products).filter((p) => p[field] === id).length
@@ -110,18 +130,30 @@ export const categoryOps = listOps('categories', 'categoryId')
 export const packagingOps = listOps('packagings', 'packagingId')
 
 // ---------- portofolio ----------
-export const addPortfolio = (src, title = 'Projek baru') => state.portfolio.push({ id: uid(), title, src, hidden: false })
-export const updatePortfolio = (id, patch) => Object.assign(state.portfolio.find((x) => x.id === id) || {}, patch)
+export function savePortfolio(data) {
+  const clean = JSON.parse(JSON.stringify(data))
+  const i = state.portfolio.findIndex((p) => p.id === clean.id)
+  if (i >= 0) state.portfolio[i] = clean
+  else state.portfolio.push({ ...clean, id: uid(), hidden: false })
+}
 export const removePortfolio = (id) => { state.portfolio = state.portfolio.filter((x) => x.id !== id) }
 
-// ---------- FAQ ----------
-export const submitQuestion = (q) => state.faqs.push({ id: uid(), q: q.trim(), a: '', status: 'pending', createdAt: Date.now() })
-export const approveFaq = (id, a) => { const f = state.faqs.find((x) => x.id === id); if (f) { f.a = a.trim(); f.status = 'approved' } }
+// ---------- FAQ (status: pending → approved | rejected; hidden = disembunyikan dari publik) ----------
+const faqById = (id) => state.faqs.find((x) => x.id === id)
+export const submitQuestion = ({ name = '', q }) => state.faqs.push({ id: uid(), name: name.trim() || 'Anonim', q: q.trim(), a: '', status: 'pending', hidden: false, createdAt: Date.now() })
+export const approveFaq = (id, a) => { const f = faqById(id); if (f) { f.a = a.trim(); f.status = 'approved'; f.hidden = false } }
+export const rejectFaq = (id) => { const f = faqById(id); if (f) f.status = 'rejected' }
+export const restoreFaq = (id) => { const f = faqById(id); if (f) f.status = 'pending' }
+export const toggleFaqHidden = (id) => { const f = faqById(id); if (f) f.hidden = !f.hidden }
 export const removeFaq = (id) => { state.faqs = state.faqs.filter((x) => x.id !== id) }
 
 // ---------- testimoni ----------
-export const submitTestimonial = ({ name, text }) => state.testimonials.push({ id: uid(), name: name.trim() || 'Pelanggan', text: text.trim(), likes: 0, status: 'pending', createdAt: Date.now() })
-export const approveTestimonial = (id) => { const t = state.testimonials.find((x) => x.id === id); if (t) t.status = 'approved' }
+const tById = (id) => state.testimonials.find((x) => x.id === id)
+export const submitTestimonial = ({ name = '', text, productId = '' }) => state.testimonials.push({ id: uid(), name: name.trim() || 'Anonim', text: text.trim(), productId, likes: 0, status: 'pending', hidden: false, createdAt: Date.now() })
+export const approveTestimonial = (id) => { const t = tById(id); if (t) { t.status = 'approved'; t.hidden = false } }
+export const rejectTestimonial = (id) => { const t = tById(id); if (t) t.status = 'rejected' }
+export const restoreTestimonial = (id) => { const t = tById(id); if (t) t.status = 'pending' }
+export const toggleTestimonialHidden = (id) => { const t = tById(id); if (t) t.hidden = !t.hidden }
 export const removeTestimonial = (id) => { state.testimonials = state.testimonials.filter((x) => x.id !== id) }
 // Like disimpan per-browser (belum sinkron antar pengunjung sampai ada backend).
 const LK = 'citra-liked'

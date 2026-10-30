@@ -18,7 +18,7 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 
-.container { max-width: 1200px; margin: 0 auto; padding: 0 var(--s20); }
+.container { max-width: 1040px; margin: 0 auto; padding: 0 var(--s20); }
 .section { padding-bottom: var(--s40); }
 .section-title { font-size: clamp(20px, 1.1rem + 1vw, 28px); line-height: 1.3; font-weight: 700; margin-bottom: var(--s16); }
 .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-16); padding: var(--s16); }

@@ -17,8 +17,8 @@ const maps = computed(() => p.value.mapsUrl || `https://www.google.com/maps/sear
         <h1 id="hero-title">{{ p.title }}</h1>
         <p>{{ p.description }}</p>
         <div class="ac">
-          <BaseButton as="a" variant="outline" :href="maps" target="_blank" rel="noopener"><template #icon><AppIcon name="map-pin" :size="16" /></template>kunjungi di google maps</BaseButton>
-          <BaseButton as="RouterLink" :to="{ name: 'home', hash: '#katalog' }">lihat produk</BaseButton>
+          <BaseButton as="a" variant="outline" :href="maps" target="_blank" rel="noopener"><template #icon><AppIcon name="map-pin" :size="16" /></template>Maps</BaseButton>
+          <BaseButton as="RouterLink" :to="{ name: 'home', hash: '#katalog' }">Lihat produk</BaseButton>
         </div>
       </div>
     </div>
@@ -33,6 +33,6 @@ p { font-size: 14px; line-height: 22px; text-align: justify; color: #3a4150; mar
 .ac { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (min-width: 900px) {
   .hero { grid-template-columns: 1.1fr 1fr; gap: 40px; padding: 28px; align-items: center; } .im { aspect-ratio: 4 / 3; }
-  h1 { text-align: left; } p { text-align: left; font-size: 16px; line-height: 26px; }
+  h1 { text-align: center; } p { text-align: left; font-size: 16px; line-height: 26px; }
 }
 </style>

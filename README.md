@@ -5,14 +5,15 @@ Website katalog dan panel admin untuk **Citra Production** (percetakan & cindera
 ## Fitur
 
 **Website pelanggan**
-- Hero, katalog (cari, filter kategori/packaging, urut harga, tampilan daftar/kotak, paginasi)
+- Hero (tombol Maps), katalog (filter kategori/packaging, urut, tampilan daftar/kotak, paginasi), halaman pencarian dengan "Pencarian terakhir"
 - Detail produk dengan carousel foto dan tombol pesan via WhatsApp
-- Portofolio, testimoni (dengan tombol suka), FAQ + form pertanyaan yang diteruskan ke WhatsApp
+- Portofolio (carousel multi-gambar), testimoni (suka + modal "Tambah Testimoni"), FAQ + modal "Ajukan Pertanyaan" yang diteruskan ke WhatsApp
 - Footer kontak, tombol WhatsApp mengambang
 
 **Panel admin** (`/#/admin`)
-- Dashboard, kelola hero, produk (CRUD + banyak foto), kategori, packaging, portofolio
-- Moderasi FAQ dan testimoni (approve/reject), kelola kontak
+- Beranda/dashboard, Produk dan Kategori (CRUD + banyak foto + deskripsi), Portofolio (multi-gambar)
+- FAQ dan Testimoni dengan tab Tayang / Masuk / Ditolak (jawab, tolak, pulihkan, sembunyikan, hapus)
+- Kontak: form edit footer dengan konfirmasi perubahan (lama → baru)
 
 ## Teknologi
 Vue 3 (Composition API, `<script setup>`), Vite, vue-router 4 (hash mode), store reaktif + IndexedDB. Tanpa backend.
@@ -42,7 +43,7 @@ src/
 ```
 
 ## Data contoh
-Seed ada di `src/stores/store.js`: 4 kategori (kategori **Pin** sengaja kosong untuk uji tampilan kosong), 20 produk, 8 portofolio, 10 FAQ. Semua bisa diubah dari halaman admin. Untuk memuat ulang data contoh, naikkan `KEY` (mis. `data-v3`) di `store.js` atau hapus data situs di browser.
+Seed ada di `src/stores/store.js`: 5 kategori (kategori **Pin** sengaja kosong untuk uji tampilan kosong), 20 produk, 8 portofolio, 12 FAQ, 11 testimoni. Semua bisa diubah dari halaman admin. Untuk memuat ulang data contoh, naikkan `KEY` (mis. `data-v4`) di `store.js` atau hapus data situs di browser.
 
 ## Batasan
 - Data tersimpan di browser (IndexedDB) pada komputer yang dipakai; belum ada server, jadi pengunjung lain tidak melihat perubahan admin.

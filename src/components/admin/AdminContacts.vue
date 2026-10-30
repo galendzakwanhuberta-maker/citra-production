@@ -1,47 +1,30 @@
 <script setup>
-import { reactive } from 'vue'
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import AppIcon from '../ui/AppIcon.vue'
-import BaseButton from '../ui/BaseButton.vue'
-import { state, updateProfile } from '../../stores/store'
-import { normalizeWa } from '../../utils/format'
-import { uid } from '../../utils/id'
-import { toast } from '../../stores/toast'
-const p = state.profile
-const f = reactive({ whatsapp: '0' + p.whatsapp.replace(/^62/, ''), email: p.email, instagram: p.instagram, address: p.address, mapsUrl: p.mapsUrl, links: JSON.parse(JSON.stringify(p.links)) })
-const errs = reactive({})
-const addLink = () => f.links.push({ id: uid(), label: '', url: '' })
-const okUrl = (u) => { try { return ['http:', 'https:'].includes(new URL(u).protocol) } catch { return false } }
-function save() {
-  Object.keys(errs).forEach((k) => delete errs[k])
-  const wa = normalizeWa(f.whatsapp)
-  if (!/^62\d{8,13}$/.test(wa)) errs.whatsapp = 'Nomor WhatsApp tidak valid. Contoh: 0818273513'
-  if (f.email && !/^\S+@\S+\.\S+$/.test(f.email)) errs.email = 'Format email tidak valid.'
-  if (f.mapsUrl && !okUrl(f.mapsUrl)) errs.mapsUrl = 'Tautan harus diawali https://'
-  if (f.links.some((l) => !l.label.trim() || !okUrl(l.url))) errs.links = 'Setiap tautan butuh nama dan alamat yang diawali https://'
-  if (Object.keys(errs).length) return toast('Periksa kembali isian yang ditandai merah.', 'err')
-  updateProfile({ whatsapp: wa, email: f.email.trim(), instagram: f.instagram.trim() ? '@' + f.instagram.trim().replace(/^@/, '') : '', address: f.address.trim(), mapsUrl: f.mapsUrl.trim(), links: f.links.map((l) => ({ id: l.id, label: l.label.trim(), url: l.url.trim() })) })
-  toast('Kontak disimpan.')
-}
+import { state } from '../../stores/store'
+import { formatPhone } from '../../utils/format'
+const route = useRoute()
+const p = computed(() => state.profile)
+const rows = computed(() => [
+  { icon: 'chat', title: 'WhatsApp', sub: formatPhone(p.value.whatsapp) },
+  { icon: 'map-pin', title: 'Lokasi', sub: p.value.address },
+  { icon: 'instagram', title: 'Instagram', sub: p.value.instagram },
+  ...(p.value.email ? [{ icon: 'mail', title: 'Email', sub: p.value.email }] : []),
+])
 </script>
 <template>
   <section id="kontak" class="a-section">
-    <div class="a-head"><h2>Kelola Kontak</h2><span class="a-hint">Tampil di footer</span></div>
-    <form class="card" novalidate @submit.prevent="save">
-      <div class="a-row">
-        <div><label class="label first" for="wa">Nomor WhatsApp</label><input id="wa" v-model="f.whatsapp" class="input" :class="{ invalid: errs.whatsapp }" inputmode="tel" /><p v-if="errs.whatsapp" class="err">{{ errs.whatsapp }}</p></div>
-        <div><label class="label first" for="ig">Instagram</label><input id="ig" v-model="f.instagram" class="input" placeholder="@citra.production" /></div>
-      </div>
-      <label class="label" for="em">Email</label><input id="em" v-model="f.email" type="email" class="input" :class="{ invalid: errs.email }" /><p v-if="errs.email" class="err">{{ errs.email }}</p>
-      <label class="label" for="ad">Alamat toko</label><textarea id="ad" v-model="f.address" class="input" rows="2" />
-      <label class="label" for="mp">Tautan Google Maps (opsional)</label><input id="mp" v-model="f.mapsUrl" class="input" :class="{ invalid: errs.mapsUrl }" placeholder="https://maps.app.goo.gl/…" /><p v-if="errs.mapsUrl" class="err">{{ errs.mapsUrl }}</p>
-      <label class="label">Kontak / tautan lain</label>
-      <div v-for="(l, i) in f.links" :key="l.id" class="lk"><input v-model="l.label" class="input" placeholder="Nama (mis. TikTok)" :aria-label="`Nama tautan ${i + 1}`" /><input v-model="l.url" class="input" placeholder="https://…" :aria-label="`Alamat tautan ${i + 1}`" /><button type="button" class="icon-btn icon-btn--danger" :aria-label="`Hapus tautan ${i + 1}`" @click="f.links.splice(i, 1)"><AppIcon name="trash" :size="16" /></button></div>
-      <p v-if="errs.links" class="err">{{ errs.links }}</p>
-      <div class="a-actions ac"><BaseButton type="button" variant="ghost" size="small" @click="addLink"><template #icon><AppIcon name="plus" :size="14" /></template>tambah kontak/link</BaseButton><BaseButton>simpan kontak</BaseButton></div>
-    </form>
+    <p v-if="route.query.saved" class="ok" role="status"><AppIcon name="check" :size="14" />Perubahan footer/kontak berhasil disimpan</p>
+    <div class="a-head"><h2>Kelola Kontak</h2><RouterLink :to="{ name: 'admin-contacts-edit' }" class="eb">Edit footer / kontak</RouterLink></div>
+    <RouterLink v-for="r in rows" :key="r.title" :to="{ name: 'admin-contacts-edit' }" class="rw">
+      <span class="ic"><AppIcon :name="r.icon" :size="16" /></span><span class="tx"><strong>{{ r.title }}</strong><small>{{ r.sub || '-' }}</small></span><AppIcon name="chevron-right" :size="16" />
+    </RouterLink>
   </section>
 </template>
 <style scoped>
-.label.first { margin-top: 0; } .lk { display: grid; grid-template-columns: 1fr 1.4fr auto; gap: 8px; margin-bottom: 8px; } .ac { margin-top: 16px; justify-content: space-between; }
-@media (max-width: 560px) { .lk { grid-template-columns: 1fr auto; } .lk input:nth-child(2) { grid-column: 1; } }
+.ok { display: flex; gap: 8px; align-items: center; background: #EAF6EC; border: 1px solid #A8DDB5; color: #1E6B34; border-radius: var(--r-6); padding: 8px 12px; font-size: 12px; margin-bottom: 14px; }
+.eb { background: var(--navy); color: #fff; text-decoration: none; font-size: 12px; font-weight: 600; padding: 9px 16px; border-radius: var(--r-6); }
+.rw { display: flex; align-items: center; gap: 12px; padding: 12px; margin-bottom: 8px; background: #fff; border: 1px solid var(--border); border-radius: var(--r-8); text-decoration: none; color: inherit; } .rw:hover { background: var(--bg-soft); }
+.ic { width: 32px; height: 32px; border-radius: 50%; background: var(--tint); color: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; } .tx { flex: 1; display: grid; min-width: 0; } .tx strong { font-size: 13px; } .tx small { font-size: 11px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>

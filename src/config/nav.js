@@ -1,15 +1,16 @@
 export const publicLinks = [
   { label: 'Beranda', to: { name: 'home' } },
-  { label: 'katalog', to: { name: 'home', hash: '#katalog' } },
-  { label: 'portofolio bisnis', to: { name: 'home', hash: '#portofolio' } },
-  { label: 'testimoni', to: { name: 'home', hash: '#testimoni' } },
+  { label: 'Katalog Produk', to: { name: 'home', hash: '#katalog' } },
+  { label: 'Portofolio', to: { name: 'home', hash: '#portofolio' } },
+  { label: 'Testimoni', to: { name: 'home', hash: '#testimoni' } },
   { label: 'FAQ', to: { name: 'home', hash: '#faq' } },
-  { label: 'kontak', to: { name: 'home', hash: '#kontak' } },
+  { label: 'Kontak', to: { name: 'home', hash: '#kontak' } },
 ]
 export const adminLinks = [
-  { label: 'Dashboard', id: 'dashboard' }, { label: 'Kelola Hero', id: 'hero' },
-  { label: 'Kelola Product', id: 'produk' }, { label: 'Kelola Kategori', id: 'kategori' },
-  { label: 'Kelola Packaging', id: 'packaging' }, { label: 'Kelola Portofolio', id: 'portofolio' },
-  { label: 'Kelola FAQ', id: 'faq' }, { label: 'Kelola Testimoni', id: 'testimoni' },
-  { label: 'Kelola Kontak', id: 'kontak' },
-].map((l) => ({ ...l, to: { name: 'admin', hash: '#' + l.id } }))
+  { label: 'Beranda', to: { name: 'admin' }, exact: true },
+  { label: 'Produk dan Kategori', id: 'produk', to: { name: 'admin-products' } },
+  { label: 'Portofolio', id: 'portofolio', to: { name: 'admin-portfolio' } },
+  { label: 'Testimoni', id: 'testimoni', to: { name: 'admin-testimonials' } },
+  { label: 'FAQ', id: 'faq', to: { name: 'admin-faq' } },
+  { label: 'Kontak', id: 'kontak', to: { name: 'admin-contacts' } },
+]

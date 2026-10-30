@@ -1,30 +1,49 @@
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import AppIcon from '../ui/AppIcon.vue'
+import KebabMenu from '../ui/KebabMenu.vue'
 import { nameOf, coverOf } from '../../stores/store'
 import { priceLabel } from '../../utils/format'
+import { toast } from '../../stores/toast'
+import { useWhatsapp } from '../../composables/useWhatsapp'
 const props = defineProps({ product: { type: Object, required: true }, layout: { type: String, default: 'list' } })
+const router = useRouter(); const { waLink } = useWhatsapp()
 const cover = computed(() => coverOf(props.product))
+const to = computed(() => ({ name: 'product', params: { id: props.product.id } }))
+const menu = [{ label: 'Lihat detail', icon: 'list' }, { label: 'Tanya via WhatsApp', icon: 'chat' }, { label: 'Bagikan', icon: 'share' }]
+async function onMenu(i) {
+  const p = props.product
+  if (i === 0) router.push(to.value)
+  else if (i === 1) window.open(waLink(`Halo, saya tertarik dengan "${p.name}" (${priceLabel(p)}). Boleh minta info dan penawaran?`), '_blank', 'noopener')
+  else {
+    const url = location.origin + location.pathname + router.resolve(to.value).href
+    try { if (navigator.share) await navigator.share({ title: p.name, url }); else { await navigator.clipboard.writeText(url); toast('Tautan produk disalin.') } } catch (e) { if (e?.name !== 'AbortError') toast('Tidak bisa membagikan.', 'err') }
+  }
+}
 </script>
 <template>
-  <RouterLink :to="{ name: 'product', params: { id: product.id } }" class="pc" :class="`pc--${layout}`">
-    <div class="im">
-      <img v-if="cover" :src="cover" :alt="product.altText || product.name" loading="lazy" />
-      <div v-else class="ph"><AppIcon name="image" :size="22" /></div>
-    </div>
-    <div class="bd">
-      <p class="ct">{{ nameOf('categories', product.categoryId) }}</p>
-      <h3>{{ product.name }}</h3>
-      <p class="pr">{{ priceLabel(product) }}</p>
-    </div>
-    <span class="cta">Detail</span>
-  </RouterLink>
+  <article class="pc" :class="`pc--${layout}`">
+    <RouterLink :to="to" class="lk" :aria-label="`${product.name}, ${priceLabel(product)}`">
+      <div class="im">
+        <img v-if="cover" :src="cover" :alt="product.altText || product.name" loading="lazy" />
+        <div v-else class="ph"><AppIcon name="image" :size="22" /></div>
+      </div>
+      <div class="bd">
+        <p class="ct">{{ nameOf('categories', product.categoryId) }}</p>
+        <h3>{{ product.name }}</h3>
+        <p class="pr">{{ priceLabel(product) }}</p>
+      </div>
+    </RouterLink>
+    <div class="km"><KebabMenu :items="menu" :label="`Menu ${product.name}`" :dark="layout === 'grid'" align="right" @select="onMenu" /></div>
+  </article>
 </template>
 <style scoped>
-.pc { display: flex; align-items: center; gap: 12px; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: var(--r-12); text-decoration: none; transition: box-shadow .15s, border-color .15s; }
-.pc:hover { box-shadow: var(--sh-md); border-color: #C9D2E6; }
-.im { width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--r-8); overflow: hidden; } .im img, .ph { width: 100%; height: 100%; object-fit: cover; }
-.bd { flex: 1; min-width: 0; } .ct { font-size: 11px; color: var(--navy); } h3 { font-size: 16px; font-weight: 700; margin: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pr { font-size: 12px; color: var(--muted); }
-.cta { background: var(--tint); color: var(--navy); font-weight: 600; font-size: 12px; padding: 7px 14px; border-radius: var(--r-full); }
-.pc--grid { flex-direction: column; align-items: stretch; padding: 12px; gap: 12px; } .pc--grid .im { width: 100%; height: auto; aspect-ratio: 4 / 3; } .pc--grid .cta { text-align: center; }
+.pc { position: relative; background: #fff; border: 1px solid var(--border); border-radius: var(--r-8); transition: box-shadow .15s, border-color .15s; } .pc:hover { box-shadow: var(--sh-md); border-color: #C9D2E6; }
+.lk { display: flex; align-items: center; gap: 12px; padding: 10px 44px 10px 10px; text-decoration: none; color: inherit; }
+.im { width: 64px; height: 64px; flex-shrink: 0; border-radius: var(--r-6); overflow: hidden; background: var(--tint); } .im img, .ph { width: 100%; height: 100%; object-fit: cover; } .ph { display: flex; align-items: center; justify-content: center; color: var(--muted); }
+.bd { flex: 1; min-width: 0; } .ct { font-size: 11px; color: var(--muted); } h3 { font-size: 15px; font-weight: 700; margin: 1px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pr { font-size: 12px; font-weight: 700; color: var(--navy); }
+.km { position: absolute; top: 50%; right: 6px; transform: translateY(-50%); }
+.pc--grid .lk { flex-direction: column; align-items: stretch; gap: 6px; padding: 6px 6px 10px; } .pc--grid .im { width: 100%; height: auto; aspect-ratio: 1 / 1; }
+.pc--grid .km { top: 10px; right: 10px; transform: none; } .pc--grid .bd { padding: 0 2px; }
 </style>

@@ -14,7 +14,7 @@ const props = defineProps({ id: String })
 const router = useRouter()
 const existing = props.id ? state.products.find((p) => p.id === props.id) : null
 const missing = !!props.id && !existing
-const form = reactive(existing ? JSON.parse(JSON.stringify(existing)) : { id: '', name: '', priceMin: '', priceMax: '', categoryId: '', packagingId: '', minOrder: '', altText: '', photos: [], hidden: false })
+const form = reactive(existing ? JSON.parse(JSON.stringify(existing)) : { id: '', name: '', priceMin: '', priceMax: '', categoryId: '', packagingId: '', minOrder: '', altText: '', description: '', photos: [], hidden: false })
 const active = ref(0), busy = ref(false), errs = reactive({})
 const max = siteConfig.maxPhotosPerProduct
 const cur = computed(() => form.photos[active.value])
@@ -50,11 +50,11 @@ function validate() {
 }
 function save() {
   if (!validate()) return toast('Periksa kembali isian yang ditandai merah.', 'err')
-  saveProduct({ ...form, name: form.name.trim(), priceMin: Number(form.priceMin), priceMax: form.priceMax === '' ? 0 : Number(form.priceMax), altText: form.altText.trim() || form.name.trim() })
+  saveProduct({ ...form, name: form.name.trim(), priceMin: Number(form.priceMin), priceMax: form.priceMax === '' ? 0 : Number(form.priceMax), altText: form.altText.trim() || form.name.trim(), description: (form.description || '').trim() })
   toast(existing ? 'Perubahan produk disimpan.' : 'Produk baru ditambahkan.')
-  router.push({ name: 'admin', hash: '#produk' })
+  router.push({ name: 'admin-products' })
 }
-const back = () => router.push({ name: 'admin', hash: '#produk' })
+const back = () => router.push({ name: 'admin-products' })
 </script>
 <template>
   <div class="a-wrap fm">
@@ -94,6 +94,8 @@ const back = () => router.push({ name: 'admin', hash: '#produk' })
         <div><label class="label" for="hm">Harga maksimal (opsional)</label><input id="hm" v-model="form.priceMax" type="number" min="0" inputmode="numeric" class="input" :class="{ invalid: errs.priceMax }" placeholder="Untuk rentang harga" /><p v-if="errs.priceMax" class="err">{{ errs.priceMax }}</p></div>
         <div><label class="label" for="mo">Min. pembelian (opsional)</label><input id="mo" v-model="form.minOrder" class="input" placeholder="Contoh: 10 pcs" maxlength="40" /></div>
       </div>
+      <label class="label" for="ds">Deskripsi produk</label>
+      <textarea id="ds" v-model="form.description" class="input" rows="4" placeholder="Jelaskan bahan, ukuran, dan keunggulan produk (tampil di halaman detail)" maxlength="500" />
       <label class="label" for="alt">Alternating text</label>
       <textarea id="alt" v-model="form.altText" class="input" rows="3" placeholder="Deskripsi singkat foto untuk pembaca layar. Contoh: Plakat kayu ukir warna cokelat" maxlength="160" />
       <label class="chk"><input v-model="form.hidden" type="checkbox" :true-value="false" :false-value="true" /> Tampilkan produk di katalog</label>
