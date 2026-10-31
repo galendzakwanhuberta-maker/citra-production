@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import { auth } from '../stores/auth'
+import { auth, verify } from '../stores/auth'
+import { loadPublic } from '../stores/store'
 import PublicLayout from '../views/PublicLayout.vue'
 import HomeView from '../views/HomeView.vue'
 import ProductDetailView from '../views/ProductDetailView.vue'
@@ -32,7 +33,14 @@ const router = createRouter({
     return saved || { top: 0 }
   },
 })
-router.beforeEach((to) => {
-  if (to.matched.some((r) => r.meta.admin) && !auth.ok) return { name: 'admin-login', query: { redirect: to.fullPath } }
+router.beforeEach(async (to) => {
+  if (!to.matched.some((r) => r.meta.admin)) return
+  if (!auth.ok) return { name: 'admin-login', query: { redirect: to.fullPath } }
+  // Pastikan token masih berlaku (sekali per sesi tab).
+  if (!auth.verified) {
+    try { if (!(await verify())) return { name: 'admin-login', query: { redirect: to.fullPath } } } catch { /* server tak terjangkau: biarkan halaman menampilkan pesan error */ }
+  }
 })
+// Setelah admin mengubah data, muat ulang data publik agar website langsung menampilkan perubahan.
+router.afterEach((to, from) => { if (from.meta?.admin && !to.meta?.admin && !to.path.startsWith('/admin')) loadPublic() })
 export default router

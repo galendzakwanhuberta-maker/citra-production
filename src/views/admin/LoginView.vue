@@ -4,22 +4,31 @@ import { useRoute, useRouter } from 'vue-router'
 import LogoMark from '../../components/ui/LogoMark.vue'
 import BaseButton from '../../components/ui/BaseButton.vue'
 import { login } from '../../stores/auth'
+import { errMsg } from '../../api/client'
 const route = useRoute(), router = useRouter()
-const code = ref(''), bad = ref(false)
-function submit() {
-  if (login(code.value)) router.replace(typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/admin') ? route.query.redirect : { name: 'admin' })
-  else { bad.value = true; code.value = '' }
+const email = ref(''), password = ref(''), error = ref(''), busy = ref(false)
+async function submit() {
+  error.value = ''
+  if (!email.value.trim() || !password.value) { error.value = 'Email dan password wajib diisi.'; return }
+  busy.value = true
+  try {
+    await login(email.value.trim(), password.value)
+    router.replace(typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/admin') ? route.query.redirect : { name: 'admin' })
+  } catch (e) { error.value = errMsg(e); password.value = '' }
+  finally { busy.value = false }
 }
 </script>
 <template>
   <main class="lg">
-    <form class="card box" @submit.prevent="submit">
+    <form class="card box" novalidate @submit.prevent="submit">
       <LogoMark :size="48" />
       <h1>Masuk admin</h1>
-      <label class="label" for="pc">Kode akses</label>
-      <input id="pc" v-model="code" type="password" class="input" :class="{ invalid: bad }" autocomplete="current-password" autofocus @input="bad = false" />
-      <p v-if="bad" class="err" role="alert">Kode akses salah. Coba lagi.</p>
-      <BaseButton block class="go">Masuk</BaseButton>
+      <label class="label" for="em">Email</label>
+      <input id="em" v-model="email" type="email" class="input" :class="{ invalid: error }" autocomplete="username" autofocus />
+      <label class="label" for="pc">Password</label>
+      <input id="pc" v-model="password" type="password" class="input" :class="{ invalid: error }" autocomplete="current-password" />
+      <p v-if="error" class="err" role="alert">{{ error }}</p>
+      <BaseButton block class="go" :loading="busy">Masuk</BaseButton>
       <RouterLink :to="{ name: 'home' }" class="back">Kembali ke website</RouterLink>
     </form>
   </main>

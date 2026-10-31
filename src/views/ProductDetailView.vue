@@ -4,15 +4,16 @@ import { useRouter } from 'vue-router'
 import AppIcon from '../components/ui/AppIcon.vue'
 import BaseButton from '../components/ui/BaseButton.vue'
 import PhotoCarousel from '../components/ui/PhotoCarousel.vue'
-import { state, nameOf } from '../stores/store'
+import { state } from '../stores/store'
 import { priceLabel } from '../utils/format'
 import { toast } from '../stores/toast'
 import { useWhatsapp } from '../composables/useWhatsapp'
 const props = defineProps({ id: String })
 const router = useRouter(); const { waLink } = useWhatsapp()
-const p = computed(() => state.products.find((x) => x.id === props.id && !x.hidden))
-const imgs = computed(() => (p.value ? p.value.photos.filter((x) => !x.hidden).map((x) => x.src) : []))
-const specs = computed(() => p.value ? [['kategori', nameOf('categories', p.value.categoryId) || '-'], ['packaging', nameOf('packagings', p.value.packagingId) || '-'], ...(p.value.minOrder ? [['min. pembelian', p.value.minOrder]] : [])] : [])
+const p = computed(() => state.products.find((x) => x.id === props.id))
+const loading = computed(() => state.status === 'idle' || state.status === 'loading')
+const imgs = computed(() => (p.value ? p.value.photos.map((x) => x.src) : []))
+const specs = computed(() => p.value ? [['kategori', p.value.categoryName || '-'], ['packaging', p.value.packagings.map((k) => k.title).join(', ') || '-']] : [])
 const wa = computed(() => p.value ? waLink(`Halo, saya tertarik dengan "${p.value.name}" (${priceLabel(p.value)}). Boleh minta info dan penawaran?`) : '#')
 const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'home', hash: '#katalog' }))
 async function share() {
@@ -24,9 +25,10 @@ async function share() {
 <template>
   <div class="container dt">
     <button class="bk" @click="back"><AppIcon name="arrow-left" :size="18" />kembali</button>
-    <div v-if="!p" class="nf card"><h1>Produk tidak ditemukan</h1><p class="muted">Produk ini mungkin sudah dihapus atau disembunyikan.</p><BaseButton :as="'RouterLink'" :to="{ name: 'home', hash: '#katalog' }">Lihat katalog</BaseButton></div>
+    <p v-if="loading" class="muted ld">Memuat produk…</p>
+    <div v-else-if="!p" class="nf card"><h1>Produk tidak ditemukan</h1><p class="muted">Produk ini mungkin sudah dihapus atau disembunyikan.</p><BaseButton :as="'RouterLink'" :to="{ name: 'home', hash: '#katalog' }">Lihat katalog</BaseButton></div>
     <div v-else class="gr">
-      <PhotoCarousel :images="imgs" :alt="p.altText || p.name" :label="p.name" />
+      <PhotoCarousel :images="imgs" :alt="p.photos[0]?.alt || p.name" :label="p.name" />
       <div class="if">
         <p class="pr">{{ priceLabel(p) }}</p>
         <h1>{{ p.name }}</h1>
@@ -46,6 +48,6 @@ async function share() {
 .gr { display: grid; gap: 20px; } .pr { font-size: clamp(24px, 1.1rem + 1.2vw, 32px); color: var(--navy); margin-bottom: 2px; } h1 { font-size: clamp(22px, 1.1rem + 1vw, 32px); margin-bottom: 20px; }
 h2 { font-size: 15px; margin-bottom: 8px; } dl { margin: 0 0 20px; } .ds { font-size: 13px; line-height: 20px; color: #3a4150; margin-bottom: 20px; white-space: pre-line; } dl div { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; } dt { width: 42%; color: var(--muted); } dd { margin: 0; }
 .cta { position: sticky; bottom: 12px; display: flex; gap: 10px; background: #fff; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-full); box-shadow: var(--sh-lg); } .wb { flex: 1; } .sh { border-radius: 50%; }
-.nf { text-align: center; display: grid; gap: 12px; justify-items: center; padding: 40px 16px; }
+.ld { padding: 40px 0; text-align: center; } .nf { text-align: center; display: grid; gap: 12px; justify-items: center; padding: 40px 16px; }
 @media (min-width: 900px) { .gr { grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; } .gr > :first-child { position: sticky; top: 88px; } .cta { position: static; border: none; box-shadow: none; padding: 0; background: none; max-width: 420px; } }
 </style>

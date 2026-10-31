@@ -2,30 +2,34 @@
 import { ref } from 'vue'
 import AppIcon from '../ui/AppIcon.vue'
 import ModalBox from '../ui/ModalBox.vue'
-import { approvedFaqs, submitQuestion } from '../../stores/store'
+import { state, submitQuestion } from '../../stores/store'
+import { errMsg } from '../../api/client'
 import { toast } from '../../stores/toast'
 import { useWhatsapp } from '../../composables/useWhatsapp'
 const { waLink } = useWhatsapp()
 const open = ref(null), teaser = ref('')
-const modal = ref(false), name = ref(''), q = ref(''), err = ref('')
+const modal = ref(false), name = ref(''), q = ref(''), err = ref(''), busy = ref(false)
 const MAX = 100
 function openModal() { q.value = teaser.value; teaser.value = ''; err.value = ''; modal.value = true }
 // Alur 2: isi form -> submit -> buka WhatsApp admin -> pertanyaan masuk daftar admin.
-function send() {
+async function send() {
   const text = q.value.trim()
   if (text.length < 5) { err.value = 'Tulis pertanyaan minimal 5 karakter.'; return }
-  submitQuestion({ name: name.value, q: text })
-  window.open(waLink(`Halo, saya ${name.value.trim() || 'pelanggan'} ingin bertanya: ${text}`), '_blank', 'noopener')
-  q.value = ''; name.value = ''; modal.value = false
-  toast('WhatsApp dibuka. Kirim pesannya agar pertanyaan sampai ke kami.')
+  busy.value = true
+  try {
+    await submitQuestion({ q: text }) // masuk antrean admin; tampil di FAQ setelah dijawab
+    window.open(waLink(`Halo, saya ${name.value.trim() || 'pelanggan'} ingin bertanya: ${text}`), '_blank', 'noopener')
+    q.value = ''; name.value = ''; modal.value = false
+    toast('Pertanyaan terkirim. WhatsApp dibuka agar kami bisa menjawab lebih cepat.')
+  } catch (e) { err.value = errMsg(e) } finally { busy.value = false }
 }
 </script>
 <template>
   <section id="faq" class="container section" aria-labelledby="fq">
     <h2 id="fq" class="section-title">Pertanyaan Umum (FAQ)</h2>
     <div class="card">
-      <p v-if="!approvedFaqs.length" class="muted em">Belum ada FAQ yang ditampilkan.</p>
-      <div v-for="f in approvedFaqs" :key="f.id" class="it">
+      <p v-if="!state.faqs.length" class="muted em">Belum ada FAQ yang ditampilkan.</p>
+      <div v-for="f in state.faqs" :key="f.id" class="it">
         <button class="qs" :aria-expanded="open === f.id" @click="open = open === f.id ? null : f.id"><span>{{ f.q }}</span><AppIcon :name="open === f.id ? 'chevron-up' : 'chevron-down'" :size="18" /></button>
         <p v-if="open === f.id" class="an">{{ f.a }}</p>
       </div>
@@ -42,7 +46,7 @@ function send() {
         <label class="label" for="qq">Pertanyaan <span class="req">*</span></label>
         <textarea id="qq" v-model="q" class="input" :class="{ invalid: err }" rows="4" placeholder="Tuliskan Pertanyaan Anda" :maxlength="MAX" />
         <p class="ct">{{ q.length }} dari {{ MAX }} karakter</p><p v-if="err" class="err">{{ err }}</p>
-        <button class="sub">Submit Pertanyaan</button>
+        <button class="sub" :disabled="busy">{{ busy ? 'Mengirim…' : 'Submit Pertanyaan' }}</button>
       </form>
     </ModalBox>
   </section>

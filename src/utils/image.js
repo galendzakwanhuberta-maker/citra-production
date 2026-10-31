@@ -34,3 +34,6 @@ export async function readImages(files, { max = Infinity } = {}) {
   }
   return { images, errors }
 }
+
+// Hasil kompres (data URL) → Blob untuk dikirim sebagai multipart/form-data.
+export const dataUrlToBlob = async (dataUrl) => (await fetch(dataUrl)).blob()

@@ -4,7 +4,7 @@ import AppIcon from '../ui/AppIcon.vue'
 import BaseButton from '../ui/BaseButton.vue'
 import PaginationBar from '../ui/PaginationBar.vue'
 import ProductCard from './ProductCard.vue'
-import { state, visibleProducts, countProducts } from '../../stores/store'
+import { state, packagingList, countInCategory } from '../../stores/store'
 import { useWhatsapp } from '../../composables/useWhatsapp'
 
 const { waLink } = useWhatsapp()
@@ -12,15 +12,15 @@ const filterOpen = ref(false)
 const category = ref('all'), packaging = ref('all'), sort = ref('az')
 const view = ref(typeof window !== 'undefined' && window.innerWidth >= 900 ? 'grid' : 'list')
 const page = ref(1)
-const sortLabel = { az: 'A-Z', new: 'terbaru', low: 'harga terendah', high: 'harga tertinggi' }
+const sortLabel = { az: 'A-Z', za: 'Z-A', low: 'harga terendah', high: 'harga tertinggi' }
 const shortName = (n) => n.replace(/\s+dan\s+/i, ' & ')
 
 // Semua kategori tampil (termasuk yang kosong) agar admin bisa melihat tampilan "belum ada produk".
-const chips = computed(() => state.categories.map((c) => ({ ...c, n: countProducts('categoryId', c.id, true) })))
+const chips = computed(() => state.categories.map((c) => ({ ...c, n: countInCategory(c.id) })))
 const filtered = computed(() => {
-  const list = visibleProducts.value.filter((p) =>
-    (category.value === 'all' || p.categoryId === category.value) && (packaging.value === 'all' || p.packagingId === packaging.value))
-  const by = { az: (a, b) => a.name.localeCompare(b.name, 'id'), new: (a, b) => b.createdAt - a.createdAt, low: (a, b) => (a.priceMin || 0) - (b.priceMin || 0), high: (a, b) => (b.priceMin || 0) - (a.priceMin || 0) }
+  const list = state.products.filter((p) =>
+    (category.value === 'all' || p.categoryId === category.value) && (packaging.value === 'all' || p.packagingIds.includes(packaging.value)))
+  const by = { az: (a, b) => a.name.localeCompare(b.name, 'id'), za: (a, b) => b.name.localeCompare(a.name, 'id'), low: (a, b) => (a.priceMin || 0) - (b.priceMin || 0), high: (a, b) => (b.priceMin || 0) - (a.priceMin || 0) }
   return [...list].sort(by[sort.value])
 })
 const perPage = computed(() => (view.value === 'grid' ? 8 : 5))
@@ -44,9 +44,9 @@ const askMsg = computed(() => `Halo, saya mencari produk${catName.value ? ` kate
           </button>
           <div v-if="filterOpen" class="fp">
             <label class="label first">Jenis packaging</label>
-            <select v-model="packaging" class="input"><option value="all">Semua packaging</option><option v-for="k in state.packagings" :key="k.id" :value="k.id">{{ k.name }}</option></select>
+            <select v-model="packaging" class="input"><option value="all">Semua packaging</option><option v-for="k in packagingList" :key="k.id" :value="k.id">{{ k.name }}</option></select>
             <label class="label">Urutkan</label>
-            <select v-model="sort" class="input"><option value="az">Nama A-Z</option><option value="new">Terbaru</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option></select>
+            <select v-model="sort" class="input"><option value="az">Nama A-Z</option><option value="za">Nama Z-A</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option></select>
             <button class="rs" @click="reset">Atur ulang</button>
           </div>
         </div>
@@ -54,7 +54,7 @@ const askMsg = computed(() => `Halo, saya mencari produk${catName.value ? ` kate
       </div>
 
       <div class="chips" role="group" aria-label="Kategori">
-        <button class="chip" :class="{ on: category === 'all' }" @click="category = 'all'">semua ({{ visibleProducts.length }})</button>
+        <button class="chip" :class="{ on: category === 'all' }" @click="category = 'all'">semua ({{ state.products.length }})</button>
         <button v-for="c in chips" :key="c.id" class="chip" :class="{ on: category === c.id }" @click="category = c.id">{{ shortName(c.name) }}</button>
       </div>
       <div class="meta">

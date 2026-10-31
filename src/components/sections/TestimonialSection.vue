@@ -2,21 +2,27 @@
 import { ref, computed } from 'vue'
 import AppIcon from '../ui/AppIcon.vue'
 import ModalBox from '../ui/ModalBox.vue'
-import { state, approvedTestimonials, submitTestimonial, toggleLike, likedState } from '../../stores/store'
+import { state, submitTestimonial, upvote, likedState } from '../../stores/store'
+import { errMsg } from '../../api/client'
 import { toast } from '../../stores/toast'
-const list = computed(() => approvedTestimonials.value)
+const list = computed(() => state.testimonies)
+const busy = ref(false)
 const track = ref(null), active = ref(0)
 const modal = ref(false), name = ref(''), product = ref(''), text = ref(''), err = ref(''), teaser = ref('')
 const MAX = 100
 function onScroll() { const el = track.value; if (!el || !list.value.length) return; active.value = Math.round(el.scrollLeft / (el.scrollWidth / list.value.length)) }
 function goTo(i) { const el = track.value; if (el) el.scrollTo({ left: (el.scrollWidth / list.value.length) * i, behavior: 'smooth' }) }
 function openModal() { text.value = teaser.value; teaser.value = ''; err.value = ''; modal.value = true }
-function send() {
+async function send() {
   if (text.value.trim().length < 5) { err.value = 'Tulis testimoni minimal 5 karakter.'; return }
-  submitTestimonial({ name: name.value, text: text.value, productId: product.value })
-  name.value = ''; product.value = ''; text.value = ''; modal.value = false
-  toast('Terima kasih! Testimoni kamu tampil setelah disetujui admin.')
+  busy.value = true
+  try {
+    await submitTestimonial({ name: name.value, text: text.value, productSlug: product.value })
+    name.value = ''; product.value = ''; text.value = ''; modal.value = false
+    toast('Terima kasih! Testimoni kamu tampil setelah disetujui admin.')
+  } catch (e) { err.value = errMsg(e) } finally { busy.value = false }
 }
+async function like(t) { if (likedState.ids.includes(t.id)) return; try { await upvote(t.id) } catch (e) { toast(errMsg(e), 'err') } }
 </script>
 <template>
   <section id="testimoni" class="container section" aria-labelledby="ts">
@@ -24,8 +30,8 @@ function send() {
     <div v-if="list.length" class="tr" ref="track" @scroll.passive="onScroll">
       <article v-for="t in list" :key="t.id" class="tc">
         <div class="hd"><span class="av">{{ t.name.charAt(0).toUpperCase() }}</span><strong>{{ t.name }}</strong></div>
-        <p>{{ t.text }}</p>
-        <button class="lk" :class="{ on: likedState.ids.includes(t.id) }" :aria-pressed="likedState.ids.includes(t.id)" :aria-label="`Suka testimoni ${t.name}`" @click="toggleLike(t.id)"><AppIcon name="thumbs-up" :size="16" /><span>{{ t.likes }}</span></button>
+        <p>{{ t.text }}</p><span v-if="t.productTitle" class="pt">{{ t.productTitle }}</span>
+        <button class="lk" :class="{ on: likedState.ids.includes(t.id) }" :aria-pressed="likedState.ids.includes(t.id)" :disabled="likedState.ids.includes(t.id)" :aria-label="`Suka testimoni ${t.name}`" @click="like(t)"><AppIcon name="thumbs-up" :size="16" /><span>{{ t.likes }}</span></button>
       </article>
     </div>
     <p v-else class="muted">Belum ada testimoni. Jadilah yang pertama!</p>
@@ -39,11 +45,11 @@ function send() {
       <form class="mf" novalidate @submit.prevent="send">
         <label class="label first" for="tn">Nama</label><input id="tn" v-model="name" class="input" placeholder="Nama Anda" maxlength="40" />
         <label class="label" for="tp">Produk</label>
-        <select id="tp" v-model="product" class="input"><option value="">Pilih Produk (Opsional)</option><option v-for="p in state.products.filter((x) => !x.hidden)" :key="p.id" :value="p.id">{{ p.name }}</option></select>
+        <select id="tp" v-model="product" class="input"><option value="">Pilih Produk (Opsional)</option><option v-for="p in state.products" :key="p.id" :value="p.id">{{ p.name }}</option></select>
         <label class="label" for="tt">Testimoni <span class="req">*</span></label>
         <textarea id="tt" v-model="text" class="input" :class="{ invalid: err }" rows="4" placeholder="Tuliskan Testimoni Anda" :maxlength="MAX" />
         <p class="ct">{{ text.length }} dari {{ MAX }} karakter</p><p v-if="err" class="err">{{ err }}</p>
-        <button class="sub">Submit Testimoni</button>
+        <button class="sub" :disabled="busy">{{ busy ? 'Mengirim…' : 'Submit Testimoni' }}</button>
       </form>
     </ModalBox>
   </section>
@@ -53,7 +59,7 @@ function send() {
 .tc { flex: 0 0 86%; scroll-snap-align: start; background: #fff; border: 1px solid var(--border); border-radius: var(--r-8); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 .hd { display: flex; align-items: center; gap: 8px; font-size: 13px; } .av { width: 24px; height: 24px; border-radius: 50%; background: var(--tint); color: var(--navy); font-weight: 700; font-size: 12px; display: flex; align-items: center; justify-content: center; }
 .tc p { font-size: 12px; color: #3a4150; flex: 1; } .lk { align-self: flex-end; display: inline-flex; gap: 6px; align-items: center; border: none; background: none; color: var(--muted); font-size: 12px; padding: 4px; } .lk.on { color: var(--navy); } .lk.on :deep(svg) { fill: var(--navy); }
-.dd { margin: 10px 0 16px; }
+.dd { margin: 10px 0 16px; } .pt { font-size: 10px; color: var(--navy); background: var(--tint); border-radius: var(--r-4); padding: 1px 8px; align-self: flex-start; } .lk:disabled { cursor: default; }
 .fm { background: var(--tint); border-radius: var(--r-12); padding: 14px; display: grid; gap: 10px; } .fm h3 { font-size: 14px; }
 .rw { display: flex; gap: 8px; } .sd { width: 44px; flex-shrink: 0; border: none; border-radius: var(--r-8); background: var(--navy); color: #fff; display: flex; align-items: center; justify-content: center; }
 .label.first { margin-top: 0; } .req { color: var(--red); } .ct { font-size: 10px; color: var(--muted); text-align: right; margin: 4px 0 0; }

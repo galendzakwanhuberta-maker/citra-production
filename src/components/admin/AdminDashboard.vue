@@ -1,12 +1,16 @@
 <script setup>
 import { computed } from 'vue'
-import { state, pendingFaqs, pendingTestimonials, visibleProducts } from '../../stores/store'
-const tiles = computed(() => [
-  { l: 'Total Produk', v: state.products.length, h: `${visibleProducts.value.length} Aktif` },
-  { l: 'Kategori', v: state.categories.length, h: `${state.packagings.length} jenis packaging` },
-  { l: 'Portofolio', v: state.portfolio.length, h: 'Koleksi foto' },
-  { l: 'Menunggu persetujuan', v: pendingFaqs.value.length + pendingTestimonials.value.length, h: 'pertanyaan & testimoni', warn: true },
-])
+import { adm } from '../../stores/admin'
+const d = computed(() => adm.dashboard)
+const tiles = computed(() => {
+  const x = d.value; if (!x) return []
+  return [
+    { l: 'Total Produk', v: x.products.published + x.products.draft, h: `${x.products.published} Aktif · ${x.products.draft} draft` },
+    { l: 'Kategori', v: adm.categories.length, h: `${adm.packagings.length} jenis packaging` },
+    { l: 'Portofolio', v: x.portfolios.published + x.portfolios.draft, h: `${x.portfolios.published} tayang` },
+    { l: 'Menunggu persetujuan', v: x.faqs.pending + x.testimonies.pending, h: `${x.faqs.pending} pertanyaan · ${x.testimonies.pending} testimoni`, warn: true },
+  ]
+})
 </script>
 <template>
   <section id="dashboard" class="a-section">

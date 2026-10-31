@@ -14,7 +14,7 @@ const swipe = useSwipe(next, prev)
     <div class="tx"><h3>{{ item.title }}</h3><p>{{ item.description }}</p></div>
     <div class="cv">
       <div class="fr" v-on="swipe">
-        <img v-if="n" :src="item.images[i].src" :alt="`${item.title} (gambar ${i + 1} dari ${n})`" loading="lazy" />
+        <img v-if="n" :src="item.images[i].src" :alt="item.images[i].alt || `${item.title} (gambar ${i + 1} dari ${n})`" loading="lazy" />
         <div v-else class="ph"><AppIcon name="image" :size="34" /></div>
         <template v-if="n > 1">
           <button class="nv l" aria-label="Gambar sebelumnya" @click="prev"><AppIcon name="chevron-left" :size="18" /></button>

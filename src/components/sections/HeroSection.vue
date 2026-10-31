@@ -3,8 +3,12 @@ import { computed } from 'vue'
 import AppIcon from '../ui/AppIcon.vue'
 import BaseButton from '../ui/BaseButton.vue'
 import { state } from '../../stores/store'
-const p = computed(() => state.profile)
-const maps = computed(() => p.value.mapsUrl || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.value.address)}`)
+import { siteConfig } from '../../config/site'
+// Foto hero belum punya endpoint di API. Taruh file di src/assets/hero.jpg (atau .png/.webp) bila ingin menampilkannya.
+const heroFiles = import.meta.glob('../../assets/hero.{jpg,jpeg,png,webp}', { eager: true, import: 'default' })
+const heroImage = Object.values(heroFiles)[0] || ''
+const p = computed(() => ({ title: siteConfig.businessName, description: state.site.about, heroImage }))
+const maps = computed(() => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(state.site.address || siteConfig.businessName)}`)
 </script>
 <template>
   <section class="container sec" aria-labelledby="hero-title">

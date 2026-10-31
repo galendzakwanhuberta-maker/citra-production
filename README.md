@@ -1,51 +1,32 @@
-# Citra Productions
+# Citra Production
 
-Website katalog dan panel admin untuk **Citra Production** (percetakan & cinderamata, Yogyakarta). Dibuat dengan **Vue 3 + Vite**, desain dari Figma "PAD", responsif untuk mobile dan desktop.
-
-## Fitur
-
-**Website pelanggan**
-- Hero (tombol Maps), katalog (filter kategori/packaging, urut, tampilan daftar/kotak, paginasi), halaman pencarian dengan "Pencarian terakhir"
-- Detail produk dengan carousel foto dan tombol pesan via WhatsApp
-- Portofolio (carousel multi-gambar), testimoni (suka + modal "Tambah Testimoni"), FAQ + modal "Ajukan Pertanyaan" yang diteruskan ke WhatsApp
-- Footer kontak, tombol WhatsApp mengambang
-
-**Panel admin** (`/#/admin`)
-- Beranda/dashboard, Produk dan Kategori (CRUD + banyak foto + deskripsi), Portofolio (multi-gambar)
-- FAQ dan Testimoni dengan tab Tayang / Masuk / Ditolak (jawab, tolak, pulihkan, sembunyikan, hapus)
-- Kontak: form edit footer dengan konfirmasi perubahan (lama → baru)
-
-## Teknologi
-Vue 3 (Composition API, `<script setup>`), Vite, vue-router 4 (hash mode), store reaktif + IndexedDB. Tanpa backend.
+Website katalog Citra Production (Vue 3 + Vite) yang tersambung ke backend Laravel (REST API `/api/v1`).
 
 ## Menjalankan
 
-Butuh [Node.js LTS](https://nodejs.org). Di Windows gunakan **Command Prompt** (PowerShell sering memblokir skrip npm).
+1. **Backend (Docker)** — di folder backend:
+   ```
+   docker compose up --build
+   docker compose exec app php artisan db:seed --force
+   docker compose exec -it app php artisan admin:create "Nama Admin" email@contoh.com
+   ```
+   Backend berjalan di `http://localhost:8080`.
+2. **Frontend** — di folder ini:
+   ```
+   npm install
+   copy .env.example .env.local
+   npm run dev
+   ```
+   Buka `http://localhost:5173`. Jika alamat backend berbeda, ubah `VITE_API_BASE_URL` di `.env.local`
+   (default `http://localhost:8080/api/v1`) lalu jalankan ulang `npm run dev`.
 
-```
-npm install
-npm run dev
-```
+Admin: buka `http://localhost:5173/#/admin`, masuk dengan email & password admin.
 
-- Website: http://localhost:5173/
-- Admin: http://localhost:5173/#/admin — kode akses awal `admin123` (ubah di `src/config/site.js`)
+## Catatan perilaku (mengikuti aturan API)
 
-Build produksi: `npm run build` (hasil di folder `dist`).
-
-## Struktur
-```
-src/
-  components/  ui/ layout/ sections/ admin/
-  views/       halaman publik + admin
-  stores/      store.js (data & aksi), db.js (IndexedDB)
-  config/      site.js, nav.js
-  router/  composables/  utils/  styles/
-```
-
-## Data contoh
-Seed ada di `src/stores/store.js`: 5 kategori (kategori **Pin** sengaja kosong untuk uji tampilan kosong), 20 produk, 8 portofolio, 12 FAQ, 11 testimoni. Semua bisa diubah dari halaman admin. Untuk memuat ulang data contoh, naikkan `KEY` (mis. `data-v4`) di `store.js` atau hapus data situs di browser.
-
-## Batasan
-- Data tersimpan di browser (IndexedDB) pada komputer yang dipakai; belum ada server, jadi pengunjung lain tidak melihat perubahan admin.
-- Kode akses admin ada di front-end, jadi **bukan** keamanan sungguhan. Ganti dengan login server saat backend tersedia.
-- Tombol "suka" testimoni tersimpan per browser.
+- Status moderasi: `pending → published | rejected`, `published ↔ withdrawn`; `rejected` final. Hapus hanya untuk yang ditolak/disembunyikan.
+- Produk perlu kategori dan harga sebelum bisa ditayangkan. Harga diisi min dan max (satu harga = min sama dengan max).
+- Foto: JPG/PNG/WebP, dikompres otomatis di browser; alt text diisi satu kali per produk/portofolio.
+- Gambar hero: letakkan file `src/assets/hero.jpg` (atau png/webp); tidak diatur lewat API.
+- Urutan FAQ belum bisa diatur dari antarmuka admin.
+- `npm run build` menghasilkan folder `dist`.

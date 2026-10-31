@@ -5,12 +5,12 @@ import AppIcon from '../ui/AppIcon.vue'
 import { state } from '../../stores/store'
 import { formatPhone } from '../../utils/format'
 const route = useRoute()
-const p = computed(() => state.profile)
 const rows = computed(() => [
-  { icon: 'chat', title: 'WhatsApp', sub: formatPhone(p.value.whatsapp) },
-  { icon: 'map-pin', title: 'Lokasi', sub: p.value.address },
-  { icon: 'instagram', title: 'Instagram', sub: p.value.instagram },
-  ...(p.value.email ? [{ icon: 'mail', title: 'Email', sub: p.value.email }] : []),
+  { icon: 'chat', title: 'WhatsApp', sub: formatPhone(state.site.whatsapp) },
+  { icon: 'map-pin', title: 'Lokasi', sub: state.site.address },
+  { icon: 'clock', title: 'Jam operasional', sub: state.site.hours },
+  { icon: 'instagram', title: 'Instagram', sub: state.site.instagram ? '@' + state.site.instagram : '' },
+  { icon: 'list', title: 'Tentang kami', sub: state.site.about },
 ])
 </script>
 <template>

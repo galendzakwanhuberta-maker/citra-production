@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AppIcon from '../components/ui/AppIcon.vue'
 import ProductCard from '../components/sections/ProductCard.vue'
-import { state, visibleProducts, nameOf } from '../stores/store'
+import { state } from '../stores/store'
 const router = useRouter()
 const RK = 'citra-recent-search'
 const load = () => { try { return JSON.parse(localStorage.getItem(RK) || '[]') } catch { return [] } }
@@ -17,7 +17,7 @@ const pick = (t) => { q.value = t; commit(t); focused.value = false }
 const clear = () => { recent.value = []; save() }
 const results = computed(() => {
   const s = q.value.trim().toLowerCase(); if (!s) return []
-  return visibleProducts.value.filter((p) => p.name.toLowerCase().includes(s) || nameOf('categories', p.categoryId).toLowerCase().includes(s))
+  return state.products.filter((p) => p.name.toLowerCase().includes(s) || p.categoryName.toLowerCase().includes(s) || p.description.toLowerCase().includes(s))
 })
 const back = () => (window.history.length > 1 ? router.back() : router.push({ name: 'home', hash: '#katalog' }))
 onMounted(() => input.value?.focus())
@@ -39,7 +39,7 @@ onMounted(() => input.value?.focus())
       <div v-if="results.length" class="gr"><ProductCard v-for="p in results" :key="p.id" :product="p" layout="grid" @click.capture="commit()" /></div>
       <div v-else class="empty"><p>Produk yang kamu cari belum ada di katalog.</p></div>
     </template>
-    <template v-else-if="!focused"><div class="gr"><ProductCard v-for="p in visibleProducts.slice(0, 8)" :key="p.id" :product="p" layout="grid" /></div></template>
+    <template v-else-if="!focused"><div class="gr"><ProductCard v-for="p in state.products.slice(0, 8)" :key="p.id" :product="p" layout="grid" /></div></template>
   </div>
 </template>
 <style scoped>

@@ -6,15 +6,16 @@ import { state } from '../../stores/store'
 import { formatPhone } from '../../utils/format'
 import { useWhatsapp } from '../../composables/useWhatsapp'
 const { waLink } = useWhatsapp()
-const p = computed(() => state.profile)
 const nav = [['Beranda', { name: 'home' }], ['Katalog Produk', { name: 'home', hash: '#katalog' }], ['Portofolio', { name: 'home', hash: '#portofolio' }], ['Testimoni', { name: 'home', hash: '#testimoni' }], ['FAQ', { name: 'home', hash: '#faq' }]]
-const contacts = computed(() => [
-  { icon: 'map-pin', text: p.value.address },
-  { icon: 'phone', text: `WhatsApp: ${formatPhone(p.value.whatsapp)}`, href: waLink() },
-  { icon: 'instagram', text: `Instagram: ${p.value.instagram}`, href: `https://instagram.com/${p.value.instagram.replace('@', '')}` },
-  { icon: 'mail', text: p.value.email, href: `mailto:${p.value.email}` },
-  ...p.value.links.map((l) => ({ icon: 'link', text: l.label, href: l.url })),
-].filter((c) => c.text && !/:\s*$/.test(c.text)))
+const contacts = computed(() => {
+  const s = state.site
+  return [
+    { icon: 'map-pin', text: s.address },
+    { icon: 'clock', text: s.hours },
+    { icon: 'phone', text: s.whatsapp ? `WhatsApp: ${formatPhone(s.whatsapp)}` : '', href: waLink() },
+    { icon: 'instagram', text: s.instagram ? `Instagram: @${s.instagram}` : '', href: `https://instagram.com/${s.instagram}` },
+  ].filter((c) => c.text)
+})
 </script>
 <template>
   <footer id="kontak" class="ft">

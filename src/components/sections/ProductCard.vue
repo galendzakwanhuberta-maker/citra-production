@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import AppIcon from '../ui/AppIcon.vue'
 import KebabMenu from '../ui/KebabMenu.vue'
-import { nameOf, coverOf } from '../../stores/store'
+import { coverOf } from '../../stores/store'
 import { priceLabel } from '../../utils/format'
 import { toast } from '../../stores/toast'
 import { useWhatsapp } from '../../composables/useWhatsapp'
@@ -30,7 +30,7 @@ async function onMenu(i) {
         <div v-else class="ph"><AppIcon name="image" :size="22" /></div>
       </div>
       <div class="bd">
-        <p class="ct">{{ nameOf('categories', product.categoryId) }}</p>
+        <p class="ct">{{ product.categoryName }}</p>
         <h3>{{ product.name }}</h3>
         <p class="pr">{{ priceLabel(product) }}</p>
       </div>
