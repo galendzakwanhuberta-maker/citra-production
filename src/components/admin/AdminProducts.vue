@@ -32,7 +32,7 @@ async function confirmDel() { try { await removeProduct(del.value.id); toast('Pr
     <div class="a-head"><h2>Kelola Product</h2></div>
     <div class="card add">
       <div class="a-head"><h3>Tambah Product</h3><span class="a-hint">Form input produk</span></div>
-      <BaseButton as="RouterLink" :to="{ name: 'admin-product-new' }" block><template #icon><AppIcon name="plus" :size="16" /></template>tambah produk baru</BaseButton>
+      <BaseButton as="RouterLink" :to="{ name: 'admin-product-new' }" block class="nb"><template #icon><AppIcon name="plus" :size="16" /></template>tambah produk baru</BaseButton>
     </div>
 
     <h3 class="lh">Daftar Produk ({{ adm.products.length }} item)</h3>
@@ -62,4 +62,5 @@ h3 { font-size: 16px; } .add { display: grid; gap: 10px; margin-bottom: 20px; pa
 .km { position: absolute; top: 6px; right: 6px; } .hid { position: absolute; left: 6px; bottom: 6px; background: #fff; }
 .ct { font-size: 11px; color: var(--muted); padding: 0 2px; } h4 { font-size: 14px; font-weight: 700; padding: 0 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .pr { font-size: 11px; font-weight: 700; color: var(--navy); padding: 0 2px; }
 @media (min-width: 720px) { .gr { grid-template-columns: repeat(4, 1fr); } }
+.nb { border-radius: var(--r-8); }
 </style>

@@ -25,13 +25,11 @@ async function doDel() { await run(() => removeTestimony(del.value.id), 'Testimo
 
     <template v-if="tab === 'live'">
       <h3>Daftar Testimoni ({{ live.length }} item)</h3>
-      <p class="muted nt">Testimoni yang sedang tayang harus disembunyikan dulu sebelum bisa dihapus.</p>
       <p v-if="!live.length" class="muted emp">Belum ada testimoni yang tayang.</p>
       <div class="gd">
         <article v-for="t in live" :key="t.id" class="cd" :class="{ 'cd--off': t.status === 'withdrawn' }">
           <div class="who"><span class="av">{{ t.author_name.charAt(0) }}</span><strong>{{ t.author_name }}</strong></div>
           <p class="tx">{{ t.content }}</p>
-          <span v-if="productName(t.product_id)" class="pt">{{ productName(t.product_id) }}</span>
           <div class="row"><span class="badge" :class="t.status === 'withdrawn' ? 'badge--mute' : 'badge--on'">● {{ t.status === 'withdrawn' ? 'Disembunyikan' : 'Tayang' }}</span><span class="lk"><AppIcon name="thumbs-up" :size="12" />{{ t.upvote_count }}</span></div>
           <div class="ac2">
             <button v-if="t.status === 'published'" class="bt bt--navy-o grow" :disabled="busy" @click="hide = t"><AppIcon name="eye-off" :size="14" />Sembunyikan</button>
@@ -49,7 +47,6 @@ async function doDel() { await run(() => removeTestimony(del.value.id), 'Testimo
         <article v-for="t in pending" :key="t.id" class="cd">
           <div class="who"><span class="av">{{ t.author_name.charAt(0) }}</span><strong>{{ t.author_name }}</strong></div>
           <p class="tx">{{ t.content }}</p>
-          <span v-if="productName(t.product_id)" class="pt">{{ productName(t.product_id) }}</span>
           <span class="badge badge--warn">Status Pending</span>
           <div class="ac2"><button class="bt bt--red-o" :disabled="busy" @click="setStatus(t, 'rejected', 'Testimoni ditolak.')">✕ Tolak</button><button class="bt bt--green" :disabled="busy" @click="setStatus(t, 'published', 'Testimoni disetujui dan tampil.')"><AppIcon name="check" :size="14" />Setujui</button></div>
         </article>
@@ -58,7 +55,6 @@ async function doDel() { await run(() => removeTestimony(del.value.id), 'Testimo
 
     <template v-else>
       <h3>Testimoni Ditolak ({{ rejected.length }} item)</h3>
-      <p class="muted nt">Testimoni yang sudah ditolak tidak bisa dipulihkan; hapus bila tidak diperlukan.</p>
       <p v-if="!rejected.length" class="muted emp">Tidak ada testimoni yang ditolak.</p>
       <div class="gd">
         <article v-for="t in rejected" :key="t.id" class="cd cd--off">

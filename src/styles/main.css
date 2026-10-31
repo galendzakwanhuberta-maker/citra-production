@@ -18,7 +18,7 @@ a { color: inherit; }
 :focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 
-.container { max-width: 1040px; margin: 0 auto; padding: 0 var(--s20); }
+.container { max-width: 1440px; margin: 0 auto; padding: 0 var(--s20); }
 .section { padding-bottom: var(--s40); }
 .section-title { font-size: clamp(20px, 1.1rem + 1vw, 28px); line-height: 1.3; font-weight: 700; margin-bottom: var(--s16); }
 .card { background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-16); padding: var(--s16); }
@@ -43,10 +43,10 @@ textarea.input { resize: vertical; min-height: 88px; }
 .fade-enter-active, .fade-leave-active { transition: opacity .18s; } .fade-enter-from, .fade-leave-to { opacity: 0; }
 
 /* admin */
-.a-wrap { max-width: 960px; margin: 0 auto; padding: 0 var(--s20); }
+.a-wrap { max-width: 1440px; margin: 0 auto; padding: 0 var(--s20); }
 .a-section { padding-bottom: var(--s32); }
 .a-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s12); margin-bottom: var(--s12); }
-.a-head h2 { font-size: clamp(20px, 1.1rem + .8vw, 26px); font-weight: 700; }
+.a-head h2 { font-size: clamp(18px, 1rem + .5vw, 22px); font-weight: 700; }
 .a-hint { font-size: 12px; color: var(--muted); }
 .a-row { display: flex; gap: var(--s12); } .a-row > * { flex: 1; min-width: 0; }
 .a-actions { display: flex; gap: var(--s8); flex-wrap: wrap; }

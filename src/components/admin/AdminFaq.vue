@@ -39,14 +39,12 @@ async function create() {
     <TabsBar v-model="tab" :tabs="tabs" />
 
     <template v-if="tab === 'live'">
-      <div class="hd"><h3>Daftar FAQ ({{ live.length }} item)</h3><button class="bt bt--navy" @click="add = true; err = ''"><AppIcon name="plus" :size="14" />Tambah FAQ</button></div>
-      <p class="muted nt">FAQ yang sedang tayang harus disembunyikan dulu sebelum bisa dihapus.</p>
-      <p v-if="!live.length" class="muted emp">Belum ada FAQ yang tayang.</p>
+      <div class="hd"><h3>Daftar FAQ ({{ live.length }} item)</h3></div>
+            <p v-if="!live.length" class="muted emp">Belum ada FAQ yang tayang.</p>
       <article v-for="f in live" :key="f.id" class="fq" :class="{ off: f.status === 'withdrawn' }">
         <span class="badge" :class="f.status === 'withdrawn' ? 'badge--mute' : 'badge--on'">{{ f.status === 'withdrawn' ? 'Disembunyikan' : 'Tayang' }}</span>
         <p class="q">{{ f.question }}</p><p class="an">{{ f.answer }}</p>
         <div class="ac">
-          <button class="bt bt--ghost" @click="openAnswer(f, true)"><AppIcon name="edit" :size="14" />Ubah jawaban</button>
           <button v-if="f.status === 'published'" class="bt bt--navy-o" @click="hide = f"><AppIcon name="eye-off" :size="14" />Sembunyikan</button>
           <button v-else class="bt bt--navy-o" @click="show(f)"><AppIcon name="eye" :size="14" />Tampilkan</button>
           <button v-if="f.status === 'withdrawn'" class="bt bt--red-o" @click="del = f"><AppIcon name="trash" :size="14" />Hapus</button>
@@ -68,8 +66,7 @@ async function create() {
 
     <template v-else>
       <h3>Pertanyaan Ditolak ({{ rejected.length }} item)</h3>
-      <p class="muted nt">Pertanyaan yang sudah ditolak tidak bisa dipulihkan; hapus bila tidak diperlukan.</p>
-      <p v-if="!rejected.length" class="muted emp">Tidak ada pertanyaan yang ditolak.</p>
+            <p v-if="!rejected.length" class="muted emp">Tidak ada pertanyaan yang ditolak.</p>
       <div class="gd">
         <article v-for="f in rejected" :key="f.id" class="cd cd--off">
           <div class="who"><span class="av">A</span><strong>{{ f.source === 'admin' ? 'Admin' : 'Anonim' }}</strong></div>

@@ -58,7 +58,7 @@ async function doDel() { try { await removePortfolio(del.value.id); toast('Porto
       <p v-if="!adm.portfolios.length" class="muted emp">Belum ada portofolio.</p>
       <article v-for="p in paged" :key="p.id" class="pi" :class="{ off: !p.is_published }">
         <div class="tx">
-          <h3>{{ p.title }} <span v-if="!p.is_published" class="badge badge--off">Draft</span><span v-if="p.is_featured" class="badge badge--on">Beranda</span></h3><p>{{ MONTHS[p.event_month - 1] }} {{ p.event_year }}<template v-if="p.description"> · {{ p.description }}</template></p>
+          <h3>{{ p.title }} <span v-if="!p.is_published" class="badge badge--off">Draft</span></h3><p>{{ p.description || `${MONTHS[p.event_month - 1]} ${p.event_year}` }}</p>
           <div class="ac">
             <button class="bt" @click="openEdit(p)"><AppIcon name="edit" :size="14" />Edit</button>
             <button class="bt bt--red" :aria-label="`Hapus portofolio ${p.title}`" @click="del = p"><AppIcon name="trash" :size="14" /></button>
@@ -67,7 +67,10 @@ async function doDel() { try { await removePortfolio(del.value.id); toast('Porto
         <div class="cv"><div class="fr"><img v-if="p.photos.length" :src="p.photos[0].src" :alt="p.photos[0].alt_text" /><div v-else class="ph"><AppIcon name="image" :size="30" /></div></div><p class="cap">{{ p.title }} <span v-if="p.photos.length > 1" class="mu">· {{ p.photos.length }} gambar</span></p></div>
       </article>
       <PaginationBar v-model:page="page" :total="total" />
-      <BaseButton variant="outline" block class="add" @click="openAdd"><template #icon><AppIcon name="plus" :size="16" /></template>Tambah portofolio</BaseButton>
+      <div class="two">
+        <BaseButton variant="outline" block @click="openAdd"><template #icon><AppIcon name="plus" :size="16" /></template>Tambah portofolio</BaseButton>
+        <BaseButton block :disabled="!paged.length" @click="openEdit(paged[0])">Edit portofolio</BaseButton>
+      </div>
     </div>
 
     <ModalBox :open="!!form" :title="form?.id ? 'Edit Portofolio' : 'Tambah Portofolio'" width="480px" @close="form = null">
@@ -105,4 +108,5 @@ async function doDel() { try { await removePortfolio(del.value.id); toast('Porto
 .chk { display: flex; gap: 8px; align-items: center; font-size: 13px; margin-top: 12px; } .tx h3 .badge { margin-left: 6px; vertical-align: middle; }
 .ft { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
 @media (min-width: 720px) { .pi { grid-template-columns: 1fr 1.1fr; align-items: center; gap: 24px; } .tx { padding-left: 20px; } }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
 </style>

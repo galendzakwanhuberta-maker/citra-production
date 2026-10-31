@@ -6,9 +6,9 @@ const tiles = computed(() => {
   const x = d.value; if (!x) return []
   return [
     { l: 'Total Produk', v: x.products.published + x.products.draft, h: `${x.products.published} Aktif · ${x.products.draft} draft` },
-    { l: 'Kategori', v: adm.categories.length, h: `${adm.packagings.length} jenis packaging` },
-    { l: 'Portofolio', v: x.portfolios.published + x.portfolios.draft, h: `${x.portfolios.published} tayang` },
-    { l: 'Menunggu persetujuan', v: x.faqs.pending + x.testimonies.pending, h: `${x.faqs.pending} pertanyaan · ${x.testimonies.pending} testimoni`, warn: true },
+    { l: 'Kategori', v: adm.categories.length, h: 'Filter katalog' },
+    { l: 'Portofolio', v: x.portfolios.published + x.portfolios.draft, h: 'Koleksi foto' },
+    { l: 'Packaging', v: adm.packagings.length, h: 'Jenis kemasan' },
   ]
 })
 </script>

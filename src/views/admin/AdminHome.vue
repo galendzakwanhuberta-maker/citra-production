@@ -11,7 +11,6 @@ import AdminContacts from '../../components/admin/AdminContacts.vue'
   <div class="a-wrap">
     <AdminDashboard /><AdminProducts />
     <AdminNameList id="kategori" title="Kelola Kategori" hint="Katalog Filter" kind="category" />
-    <AdminNameList id="packaging" title="Kelola Packaging" hint="Katalog Filter" kind="packaging" />
     <AdminPortfolio /><AdminFaq /><AdminTestimonials /><AdminContacts />
   </div>
 </template>

@@ -9,7 +9,7 @@ import { adminLinks } from '../../config/nav'
 import { adm, loadAdmin, resetAdmin } from '../../stores/admin'
 import { logout } from '../../stores/auth'
 const router = useRouter(); const open = ref(false)
-const links = computed(() => adminLinks.map((l) => ({ ...l, badge: l.id === 'faq' ? adm.dashboard?.faqs.pending || '' : l.id === 'testimoni' ? adm.dashboard?.testimonies.pending || '' : '' })))
+const links = computed(() => adminLinks.map((l) => ({ ...l, badge: '' })))
 onMounted(() => loadAdmin())
 async function out() { open.value = false; await logout(); resetAdmin(); router.replace({ name: 'admin-login' }) }
 </script>

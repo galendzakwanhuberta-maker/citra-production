@@ -8,9 +8,7 @@ const route = useRoute()
 const rows = computed(() => [
   { icon: 'chat', title: 'WhatsApp', sub: formatPhone(state.site.whatsapp) },
   { icon: 'map-pin', title: 'Lokasi', sub: state.site.address },
-  { icon: 'clock', title: 'Jam operasional', sub: state.site.hours },
   { icon: 'instagram', title: 'Instagram', sub: state.site.instagram ? '@' + state.site.instagram : '' },
-  { icon: 'list', title: 'Tentang kami', sub: state.site.about },
 ])
 </script>
 <template>

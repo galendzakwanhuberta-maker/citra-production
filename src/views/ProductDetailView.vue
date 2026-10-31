@@ -45,7 +45,7 @@ async function share() {
 </template>
 <style scoped>
 .dt { padding-top: 18px; padding-bottom: 40px; } .bk { display: inline-flex; gap: 8px; align-items: center; border: none; background: none; font-weight: 600; font-size: 14px; padding: 4px 0; margin-bottom: 14px; }
-.gr { display: grid; gap: 20px; } .pr { font-size: clamp(24px, 1.1rem + 1.2vw, 32px); color: var(--navy); margin-bottom: 2px; } h1 { font-size: clamp(22px, 1.1rem + 1vw, 32px); margin-bottom: 20px; }
+.gr { display: grid; gap: 20px; } .pr { font-size: clamp(16px, 1rem + .4vw, 20px); line-height: 1.4; color: var(--navy); margin-bottom: 4px; } h1 { font-size: clamp(20px, 1rem + .8vw, 26px); line-height: 1.3; margin-bottom: 20px; }
 h2 { font-size: 15px; margin-bottom: 8px; } dl { margin: 0 0 20px; } .ds { font-size: 13px; line-height: 20px; color: #3a4150; margin-bottom: 20px; white-space: pre-line; } dl div { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; } dt { width: 42%; color: var(--muted); } dd { margin: 0; }
 .cta { position: sticky; bottom: 12px; display: flex; gap: 10px; background: #fff; padding: 10px; border: 1px solid var(--border); border-radius: var(--r-full); box-shadow: var(--sh-lg); } .wb { flex: 1; } .sh { border-radius: 50%; }
 .ld { padding: 40px 0; text-align: center; } .nf { text-align: center; display: grid; gap: 12px; justify-items: center; padding: 40px 16px; }
